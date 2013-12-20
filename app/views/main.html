@@ -1,2 +1,12 @@
-<controls></controls>
-<board></board>
+<div class="minesweeper">
+  <controls></controls>
+  <div class="board">
+    <table>
+      <tr ng-repeat="row in game.board.rows">
+        <td ng-repeat="cell in row">
+          <cell></cell>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
