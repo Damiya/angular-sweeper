@@ -4,7 +4,7 @@
     <table>
       <tr ng-repeat="row in game.board.rows">
         <td ng-repeat="cell in row">
-          <cell></cell>
+          <cell board="game.board" cell="cell"></cell>
         </td>
       </tr>
     </table>

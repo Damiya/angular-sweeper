@@ -18,15 +18,8 @@ class Cell
     @visible = false
     @adjacentCells = []
 
-  explode: () ->
-    console.log "You lose"
-
-  interact: () ->
+  uncover: () ->
     @visible = true
-    if @count == 0
-      for cell in @adjacentCells
-        if cell.count == 0
-          console.log("Something's happening here")
 
   updateCount: () ->
     @count = 0
@@ -38,6 +31,7 @@ class Cell
 class Board
   constructor: (@width, @height, @numMines) ->
     @rows = []
+    @updateList = []
 
   directionGrid: [
     {x: 0, y: 1},
@@ -68,6 +62,27 @@ class Board
       modY = direction.y
       neighborCell = @getCell(cellX + modX, cellY + modY)
       cell.adjacentCells.push(neighborCell) if neighborCell
+
+  interact: (x,y) ->
+    console.log "Interact with #{x},#{y}"
+    cell = @getCell(x,y)
+    if cell.hasMine
+      @handleLoss()
+      return
+    @updateList = [cell]
+    @performCellUpdateCascade()
+
+  performCellUpdateCascade: () ->
+    cell = @updateList.pop()
+    cell.uncover()
+    if cell.count == 0
+      for adjCell in cell.adjacentCells
+        if !adjCell.visible
+          @updateList.push(adjCell)
+    @performCellUpdateCascade() unless @updateList.length==0
+
+  handleLoss: () ->
+    console.log "Gg wrekt"
 
   randomInRange: (min, max) ->
     Math.floor(Math.random() * (max - min + 1)) + min
@@ -104,6 +119,8 @@ class Board
     for row in @rows
       for cell in row
         cell.updateCount()
+        if cell.count == 0 && !cell.hasMine
+          console.log "0 at #{cell.x},#{cell.y}"
 
 class Game
   constructor: () ->

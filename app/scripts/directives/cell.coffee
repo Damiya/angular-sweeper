@@ -4,8 +4,11 @@ angular.module('minesweeperApp')
 .directive('cell', () ->
     templateUrl: 'views/partials/cell.html'
     restrict: 'E'
+    scope:
+      cell: '='
+      board: '='
     link: (scope, element, attrs) ->
-      console.log "Cell created with scope #{scope.$id}"
+      #console.log "Cell created with scope #{scope.$id}"
       cell = scope.cell
 
       updateVisibility = () ->
