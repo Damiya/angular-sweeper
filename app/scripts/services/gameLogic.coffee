@@ -29,7 +29,7 @@ class Cell
 
 
 class Board
-  constructor: (@width, @height, @numMines) ->
+  constructor: (@width, @height, @numMines, @game) ->
     @rows = []
     @updateList = []
 
@@ -64,10 +64,11 @@ class Board
       cell.adjacentCells.push(neighborCell) if neighborCell
 
   interact: (x,y) ->
-    console.log "Interact with #{x},#{y}"
+    return unless @game.status == "inProgress" # Noop if the game is over
     cell = @getCell(x,y)
     if cell.hasMine
-      @handleLoss()
+      cell.uncover()
+      @game.gameOver(false)
       return
     @updateList = [cell]
     @performCellUpdateCascade()
@@ -77,12 +78,13 @@ class Board
     cell.uncover()
     if cell.count == 0
       for adjCell in cell.adjacentCells
-        if !adjCell.visible
-          @updateList.push(adjCell)
+        @updateList.push(adjCell) if !adjCell.visible
     @performCellUpdateCascade() unless @updateList.length==0
 
-  handleLoss: () ->
-    console.log "Gg wrekt"
+  revealAll: () ->
+    for row in @rows
+      for cell in row
+        cell.uncover()
 
   randomInRange: (min, max) ->
     Math.floor(Math.random() * (max - min + 1)) + min
@@ -124,8 +126,19 @@ class Board
 
 class Game
   constructor: () ->
-    console.log "Game Constructor"
+    @status = "" #Todo: Pull these out someplace to be reused and sync'd into our non-model logic
 
   startNewGame: () ->
-    @board = new Board(8, 8, 10)
+    @board = new Board(8, 8, 10, this)
+    @status = "inProgress" #Todo: Pull these out someplace to be reused and sync'd into our non-model logic
     @board.setupBoard()
+
+  gameOver: (wasVictory) ->
+    if wasVictory
+      @status = "victory"
+      @board.revealAll()
+      alert("You win!")
+    else
+      @status = "failure"
+      @board.revealAll()
+      alert("You lose!")

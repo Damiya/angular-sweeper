@@ -2,8 +2,9 @@
 
 angular.module('minesweeperApp')
   .directive('controls', () ->
-    template: '<div></div>'
+    templateUrl: 'views/partials/controls.html'
     restrict: 'E'
     link: (scope, element, attrs) ->
-      element.text 'this is the controls directive'
+      scope.startNewGame = () ->
+        scope.game.startNewGame()
   )

@@ -1,10 +1,23 @@
-@mixin border-radius($radius) {
-  -webkit-border-radius: $radius;
-  -moz-border-radius: $radius;
-  border-radius: $radius;
+table {
+  border-spacing: 0px;
+}
+
+.minesweeper {
+  background-color: #c9c9c9;
+  width: 650px;
+  height: 450px;
+}
+
+.controls {
+  border: solid 1px #000000;
+}
+
+.board {
+  float: right
 }
 
 .cell {
+  border: solid 1px #000000;
   display: block;
   $base-color: #0004ff;
   color: $base-color;

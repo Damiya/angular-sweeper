@@ -15,9 +15,9 @@ angular.module('minesweeperApp')
         element.children().addClass('visible')
 
         if cell.hasMine
-          element.children().text("BOMB")
+          element.children().text('B')
         else
-          element.children().text(cell.count)
+          element.children().text(cell.count) if cell.count > 0
 
       scope.$watch('cell.visible', (newVal, oldVal)->
         updateVisibility() if newVal
