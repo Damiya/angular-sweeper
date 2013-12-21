@@ -95,12 +95,12 @@ class Board
     @getCell(x, y)
 
   setupMines: () ->
-    # There's the potential for duplicates in getRandomCell so we should do some checking to make sure we get an acceptable number of mines
-    # Could make it a while loop?
-    for i in [1..@numMines]
+    mineCount = 0
+    while mineCount<@numMines
       cell = @getRandomCell()
-      cell.hasMine = true
-      console.log "Mined #{i}: #{cell.x}, #{cell.y}"
+      unless cell.hasMine # If we want 10 mines, we need 10 mines. This prevents dupe results from getRandomCell
+        cell.hasMine = true
+        mineCount++
 
   createCells: () ->
     for y in [0..@height - 1]
@@ -121,12 +121,10 @@ class Board
     for row in @rows
       for cell in row
         cell.updateCount()
-        if cell.count == 0 && !cell.hasMine
-          console.log "0 at #{cell.x},#{cell.y}"
 
 class Game
   constructor: () ->
-    @status = "" #Todo: Pull these out someplace to be reused and sync'd into our non-model logic
+    @status = ""
 
   startNewGame: () ->
     @board = new Board(8, 8, 10, this)
