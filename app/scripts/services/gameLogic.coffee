@@ -96,9 +96,9 @@ class Board
 
   setupMines: () ->
     mineCount = 0
-    while mineCount<@numMines
+    while mineCount<@numMines # While loop guarantees numMines (prevents dupe results from getRandomCell)
       cell = @getRandomCell()
-      unless cell.hasMine # If we want 10 mines, we need 10 mines. This prevents dupe results from getRandomCell
+      unless cell.hasMine
         cell.hasMine = true
         mineCount++
 
