@@ -7,4 +7,7 @@ angular.module('minesweeperApp')
     link: (scope, element, attrs) ->
       scope.startNewGame = () ->
         scope.game.startNewGame()
+        scope.board = scope.game.board
+      scope.validateCompletion = () ->
+        scope.game.validateCompletion()
   )
