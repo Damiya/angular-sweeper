@@ -156,3 +156,6 @@ class Game
       @status = "failure"
       @board.revealAll()
       alert("You lose!")
+
+  validateVictory: () ->
+    alert("You've not won yet")
