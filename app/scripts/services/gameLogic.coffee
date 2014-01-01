@@ -33,6 +33,7 @@ class Board
   constructor: (@width, @height, @numMines, @game) ->
     @rows = []
     @updateList = []
+    @mines = []
 
   directionGrid: [
     {x: 0, y: 1},
@@ -77,18 +78,19 @@ class Board
 
     if cell.hasMine
       cell.uncover()
-      @game.gameOver(false)
+      @game.endGame(false)
       return
-    @updateList = [cell]
-    @performCellUpdateCascade()
 
-  performCellUpdateCascade: () ->
+    @updateList = [cell]
+    @recursiveCellUncover()
+
+  recursiveCellUncover: () ->
     cell = @updateList.pop()
     cell.uncover()
     if cell.count == 0
       for adjCell in cell.adjacentCells
         @updateList.push(adjCell) if !adjCell.visible
-    @performCellUpdateCascade() unless @updateList.length==0
+    @recursiveCellUncover() unless @updateList.length==0
 
   revealAll: () ->
     @eachCell((cell) ->
@@ -110,6 +112,7 @@ class Board
       unless cell.hasMine
         cell.hasMine = true
         mineCount++
+        @mines.push(cell)
 
   createCells: () ->
     for y in [0..@height - 1]
@@ -147,15 +150,22 @@ class Game
     @status = "inProgress" #Todo: Pull these out someplace to be reused and sync'd into our non-model logic
     @board.setupBoard()
 
-  gameOver: (wasVictory) ->
+  endGame: (wasVictory) ->
     if wasVictory
       @status = "victory"
       @board.revealAll()
-      alert("You win!")
+      alert("You win! Or possibly just flagged everything. One of the two!")
     else
       @status = "failure"
       @board.revealAll()
       alert("You lose!")
 
-  validateVictory: () ->
-    alert("You've not won yet")
+  validateCompletion: () ->
+    victory = true
+    for mineCell in @board.mines
+      victory = false unless mineCell.hasFlag
+
+    if victory
+      @endGame(victory)
+    else
+      alert("The game hasn't ended yet.")
