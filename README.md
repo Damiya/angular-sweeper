@@ -14,10 +14,6 @@ TODO:
 Icons
 ===============
 
-By: Sirea (http://www.rw-designer.com/user/5920) m.smejkalova@gmail.com
+Bomb: Sirea (http://www.rw-designer.com/user/5920) m.smejkalova@gmail.com
 
-Download: http://www.rw-designer.com/icon-set/minesweeper
-
-Author's decription:
-
-Icons from the Minesweeper game. You know it from Windows.
+Flag: Sirea (http://www.rw-designer.com/user/5920) m.smejkalova@gmail.com

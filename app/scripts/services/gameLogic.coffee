@@ -2,10 +2,6 @@
 
 angular.module('minesweeperApp')
   .factory 'gameFactory', () ->
-    # Service logic
-    # ...
-
-    # Public API here
     {
       getNewGame: () ->
         game = new Game()
@@ -128,7 +124,7 @@ class Board
         func(cell)
 
   setupBoard: () ->
-    self = this # Closures, yay!
+    self = this # Reference for the eachCell closure later
 
     @createCells()
 
