@@ -2,10 +2,6 @@
 
 angular.module('minesweeperApp')
   .factory 'gameFactory', () ->
-    # Service logic
-    # ...
-
-    # Public API here
     {
       getNewGame: () ->
         game = new Game()
@@ -15,8 +11,13 @@ angular.module('minesweeperApp')
 class Cell
   constructor: (@x, @y) ->
     @hasMine = false
+    @hasFlag = false
     @visible = false
     @adjacentCells = []
+
+  setFlag: (value) ->
+    unless @visible
+      @hasFlag = value
 
   uncover: () ->
     @visible = true
@@ -32,6 +33,7 @@ class Board
   constructor: (@width, @height, @numMines, @game) ->
     @rows = []
     @updateList = []
+    @mines = []
 
   directionGrid: [
     {x: 0, y: 1},
@@ -63,28 +65,37 @@ class Board
       neighborCell = @getCell(cellX + modX, cellY + modY)
       cell.adjacentCells.push(neighborCell) if neighborCell
 
-  interact: (x,y) ->
+  flag: (x,y) ->
     return unless @game.status == "inProgress" # Noop if the game is over
     cell = @getCell(x,y)
+    cell.setFlag(!cell.hasFlag)
+
+  reveal: (x,y) ->
+    return unless @game.status == "inProgress" # Noop if the game is over
+    cell = @getCell(x,y)
+    if cell.hasFlag
+      return # Clicking on a cell with a flag does nothing
+
     if cell.hasMine
       cell.uncover()
-      @game.gameOver(false)
+      @game.endGame(false)
       return
-    @updateList = [cell]
-    @performCellUpdateCascade()
 
-  performCellUpdateCascade: () ->
+    @updateList = [cell]
+    @recursiveCellUncover()
+
+  recursiveCellUncover: () ->
     cell = @updateList.pop()
     cell.uncover()
     if cell.count == 0
       for adjCell in cell.adjacentCells
         @updateList.push(adjCell) if !adjCell.visible
-    @performCellUpdateCascade() unless @updateList.length==0
+    @recursiveCellUncover() unless @updateList.length==0
 
   revealAll: () ->
-    for row in @rows
-      for cell in row
-        cell.uncover()
+    @eachCell((cell) ->
+      cell.uncover()
+    )
 
   randomInRange: (min, max) ->
     Math.floor(Math.random() * (max - min + 1)) + min
@@ -101,6 +112,7 @@ class Board
       unless cell.hasMine
         cell.hasMine = true
         mineCount++
+        @mines.push(cell)
 
   createCells: () ->
     for y in [0..@height - 1]
@@ -109,18 +121,25 @@ class Board
         row.push(new Cell(x, y))
       @rows.push(row)
 
-  setupBoard: () ->
-    @createCells()
-
+  eachCell: (func) ->
     for row in @rows
       for cell in row
-        @setAdjacentCells(cell)
+        func(cell)
+
+  setupBoard: () ->
+    self = this # Reference for the eachCell closure later
+
+    @createCells()
+
+    @eachCell((cell) ->
+      self.setAdjacentCells(cell)
+    )
 
     @setupMines()
 
-    for row in @rows
-      for cell in row
-        cell.updateCount()
+    @eachCell((cell) ->
+      cell.updateCount()
+    )
 
 class Game
   constructor: () ->
@@ -131,12 +150,22 @@ class Game
     @status = "inProgress" #Todo: Pull these out someplace to be reused and sync'd into our non-model logic
     @board.setupBoard()
 
-  gameOver: (wasVictory) ->
+  endGame: (wasVictory) ->
     if wasVictory
       @status = "victory"
       @board.revealAll()
-      alert("You win!")
+      alert("You win! Or possibly just flagged everything. One of the two!")
     else
       @status = "failure"
       @board.revealAll()
       alert("You lose!")
+
+  validateCompletion: () ->
+    victory = true
+    for mineCell in @board.mines
+      victory = false unless mineCell.hasFlag
+
+    if victory
+      @endGame(victory)
+    else
+      alert("The game hasn't ended yet.")

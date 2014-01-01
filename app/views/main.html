@@ -4,7 +4,7 @@
     <table>
       <tr ng-repeat="row in game.board.rows">
         <td ng-repeat="cell in row">
-          <cell board="game.board" cell="cell"></cell>
+          <cell cell="cell" ng-click="board.reveal(cell.x,cell.y)" ng-right-click="board.flag(cell.x,cell.y)"></cell>
         </td>
       </tr>
     </table>
