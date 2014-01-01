@@ -5,4 +5,5 @@ angular.module('minesweeperApp')
     ($scope,gameFactory) ->
       $scope.game = gameFactory.getNewGame()
       $scope.game.startNewGame()
+      $scope.board = $scope.game.board # Just an alias to the game's board
   ]

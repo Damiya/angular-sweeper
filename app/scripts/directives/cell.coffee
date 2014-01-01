@@ -2,26 +2,38 @@
 
 angular.module('minesweeperApp')
 .directive('cell', () ->
-    templateUrl: 'views/partials/cell.html'
     restrict: 'E'
     scope:
       cell: '='
       board: '='
     link: (scope, element, attrs) ->
-      #console.log "Cell created with scope #{scope.$id}"
       cell = scope.cell
 
       updateVisibility = () ->
-        element.children().addClass('visible')
+        element.addClass('visible')
 
         if cell.hasMine
-          element.children().text('B')
+          element.addClass('mined')
         else
-          element.children().text(cell.count) if cell.count > 0
+          if cell.hasFlag
+            element.addClass('misflagged')
+          else
+            element.text(cell.count) if cell.count > 0
 
-      scope.$watch('cell.visible', (newVal, oldVal)->
+      updateFlag = (value) ->
+        if value
+          element.addClass('flagged')
+        else
+          element.removeClass('flagged')
+
+
+      scope.$watch('cell.visible', (newVal) ->
         updateVisibility() if newVal
       )
 
-      return
+      scope.$watch('cell.hasFlag', (newVal) ->
+        updateFlag(newVal)
+      )
+
+      return # Explicit return because otherwise Angular thinks I'm returning some aspect of the DOM which makes it unhappy
   )
