@@ -24,11 +24,13 @@ table {
   font-size: 20px;
   font-weight: bold;
   text-align: center;
-  line-height: 50px;
+  line-height: 48px;
   background-color: $base-color;
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   cursor: pointer;
+  background-position: center;
+  background-repeat: none;
 
   &:hover {
     $hover-color: lighten($base-color, 30%);
@@ -37,5 +39,17 @@ table {
 
   &.visible {
     background-color: #cdcdcd;
+  }
+
+  &.mined {
+    background-image: url('../images/mine.png');
+  }
+
+  &.flagged {
+    background-image: url('../images/flag.png');
+  }
+
+  &.misflagged {
+    background-color: #ff1000;
   }
 }

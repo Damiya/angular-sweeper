@@ -15,13 +15,27 @@ angular.module('minesweeperApp')
         element.children().addClass('visible')
 
         if cell.hasMine
-          element.children().text('B')
+          element.children().addClass('mined')
         else
-          element.children().text(cell.count) if cell.count > 0
+          if cell.hasFlag
+            element.children().addClass('misflagged')
+          else
+            element.children().text(cell.count) if cell.count > 0
 
-      scope.$watch('cell.visible', (newVal, oldVal)->
+      updateFlag = (value) ->
+        if value
+          element.children().addClass('flagged')
+        else
+          element.children().removeClass('flagged')
+
+
+      scope.$watch('cell.visible', (newVal) ->
         updateVisibility() if newVal
       )
 
-      return
+      scope.$watch('cell.hasFlag', (newVal) ->
+        updateFlag(newVal)
+      )
+
+      return # Explicit return because otherwise Angular thinks I'm returning some aspect of the DOM which makes it unhappy
   )
